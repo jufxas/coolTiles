@@ -20,7 +20,7 @@ let squareConfigs = {
     transformationTime: 100, 
     frameRate: 15,
     showText: false, 
-    transformationColor: {r: 'random', g: 'random', b:'random', special: "ANY-2"} // special can be RANDOM_ALL, ONLY-R, ONLY-G, ONLY-B, RANDOM-R, RANDOM-G, RANDOM-B, RANDOM-RG, RANDOM-GB. CAN ALSO CHAIN LIKE ONLY-R RANDOM-R. IF U DO SOMETHING LIKE "ONLY-R RANDOM-G" UR JUST GONNA BREAK IT. 
+    transformationColor: {r: 'random', g: 'random', b:'random', special: "ANY"} // special can be RANDOM_ALL, ONLY-R, ONLY-G, ONLY-B, RANDOM-R, RANDOM-G, RANDOM-B, RANDOM-RG, RANDOM-GB. CAN ALSO CHAIN LIKE ONLY-R RANDOM-R. IF U DO SOMETHING LIKE "ONLY-R RANDOM-G" UR JUST GONNA BREAK IT. 
     // So heres the difference: For transformation color, r,g,b that is its constant transformation color. If you set it a transf color to 'random' then it will be a random color (0 to 255) but still have the same r value across all squares. if you have the special set to RANDOM-R, then the R value will constantly change across all squares. 
     // RAINBOW - u get rainbow wow ! overrides all other commands 
     // NOTE THAT SPECIAL SETTINGS OVERRIDE TRANSF COL OPTIONS. ONLY-() IS MOST POWERFUL. DOING RANDOM-RG AND ONLY-R WILL STILL JUST BE ONLY-R RANDOM-R
@@ -31,7 +31,7 @@ let squareConfigs = {
 // default values meant to be overridden 
 let savedValues = {
     dimensions: {x: 10,y: 10,w: 10,h: 10
-        },horizontalRows: 20,verticalColumns: 20,numberOfSquares: 1,spacingBetweenSquaresX: 10, spacingBetweenSquaresY: 10, colors: {r: 255,g: 255,b: 255},transformationTime: 100,frameRate: 15,showText: false,transformationColor: {r: 'random',g: 'random',b: 'random',special: "ANY-2"}
+        },horizontalRows: 20,verticalColumns: 20,numberOfSquares: 1,spacingBetweenSquaresX: 10, spacingBetweenSquaresY: 10, colors: {r: 255,g: 255,b: 255},transformationTime: 100,frameRate: 15,showText: false,transformationColor: {r: 'random',g: 'random',b: 'random',special: "ANY"}
 } 
 
 // FOR RAINBOW GRAD 
@@ -445,7 +445,7 @@ function setup () {
                 load()
                 if (!buttonHandler.transColorInfo) {
                     $("div#transformationColorInfoHolder").append(`
-                        <div class="popup expand">The colors the squares will be once infected. R/G/B can be either be a 0-255 numerical value <em>or</em>  <strong>random</strong>, which sets a random R/G/B value for all the squares.<br>The Special setting has miscellaneous effects on all the squares.<br><strong>ONLY-R/G/B (e.g., ONLY-R)</strong>:Makes it so that all RGB values will the be same based off the chosen letter. ONLY-R indicates that the transformation color will be (if R = 200) rgb(200, 200, 200). Same goes for ONLY-G, ONLY-B.<br><strong>RANDOM-R/G/B</strong>: Makes each square have a constantly changing/random R/G/B value. Can be set as RANDOM-R/G/B or chained together as 'RANDOM-RG', 'RANDOM-GB', etc.<br><em>Commands can be chained together, such as putting Special as 'ONLY-R RANDOM-R', 'ONLY-G RANDOM-G'. You must separate multiple commands by a space and all characters are case sensitive. Note that nonsense chained commands such as 'ONLY-R RANDOM-G' will most likely not work as intended.</em><br><strong>RAINBOW</strong>: Changes the rgb values of each of the squares to have a rainbow pattern. Overrides any RANDOM- or ONLY- command.<br><strong>ANY-1</strong>: Randomly chooses from the list of commands once and sticks with it for the rest of the transformations. 'ANY-2' is not in the list of potential commands. <br><strong>ANY-2</strong>: Randomly chooses from the list of commands constantly. 'ANY-1' is not in the list of potential commands.  </div>
+                        <div class="popup expand">The colors the squares will be once infected. R/G/B can be either be a 0-255 numerical value <em>or</em>  <strong>random</strong>, which sets a random R/G/B value for all the squares.<br>The Special setting has miscellaneous effects on all the squares.<br><strong>ONLY-R/G/B (e.g., ONLY-R)</strong>:Makes it so that all RGB values will the be same based off the chosen letter. ONLY-R indicates that the transformation color will be (if R = 200) rgb(200, 200, 200). Same goes for ONLY-G, ONLY-B.<br><strong>RANDOM-R/G/B</strong>: Makes each square have a constantly changing/random R/G/B value. Can be set as RANDOM-R/G/B or chained together as 'RANDOM-RG', 'RANDOM-GB', etc.<br><em>Commands can be chained together, such as putting Special as 'ONLY-R RANDOM-R', 'ONLY-G RANDOM-G'. You must separate multiple commands by a space and all characters are case sensitive. Note that nonsense chained commands such as 'ONLY-R RANDOM-G' will most likely not work as intended.</em><br><strong>RAINBOW</strong>: Changes the rgb values of each of the squares to have a rainbow pattern. Overrides any RANDOM- or ONLY- command.<br><strong>ANY</strong>: Randomly chooses from the list of commands constantly.</div>
                     `)
                     buttonHandler.transColorInfo = true;
                 } else if (buttonHandler.transColorInfo) {
@@ -462,6 +462,7 @@ function setup () {
         // set just in case user does not define these values 
        squareConfigs.dimensions.x = 10; 
        squareConfigs.dimensions.y = 10; 
+        emergencyDeactivation = true; 
         
         $("input").each(function() {
             let id = $(this).attr("id")
@@ -479,16 +480,16 @@ function setup () {
                 } else if (squareConfigs[configs][id] !== undefined && typeof squareConfigs[configs] === "object") {
                     
                     if (name === "dimension") {
-                        $(`input[name='${name}`).each(function () {
+                        $(`input[name='${name}'`).each(function () {
                             let thisID = $(this).attr("id")
                             let userValue = $("input#" + thisID).val()
                             squareConfigs[configs][thisID] = parseInt(userValue)
                         })
                         
                     } else if (name === "ForColors") {
-                        $(`input[name='${name}`).each(function() {
+                        $(`input[name='${name}'`).each(function() {
                             let thisID = $(this).attr("id")
-                            let userValue = $("input#"+thisID).val()
+                            let userValue = $(`input[id='${thisID}'][name='${name}']`).val()
                             if (userValue === "random") {
                                 squareConfigs[configs][thisID] = "random"
                             } else {
@@ -496,7 +497,7 @@ function setup () {
                             }
                         })
                     } else if (name === "ForTransformationColors" && configs === "transformationColor") {
-                        $(`input[name='${name}`).each(function () {
+                        $(`input[name='${name}'`).each(function () {
                             let thisID = $(this).attr("id")
                             let userValue = $(`input[id='${thisID}'][name='${name}']`).val()
                             // THIS IS HOW YOU DO MULTIPLE SELECTORS !!!!!! input[id="."][value="."][name=""]
@@ -518,11 +519,11 @@ function setup () {
             }
         })
 
-        // console.log(squareConfigs)
 
         wholeSquareHolder = [];
         setConstants()
         test()
+
 
 
     })
@@ -828,16 +829,9 @@ function mouseClicked() {
                     let notHitSquares = [false, false, false] // R = 0, G = 1, B = 2
                     let combinations = ["RANDOM_ALL", "ONLY-R", "ONLY-G", "ONLY-B", "RANDOM-R ONLY-R", 'RANDOM-G ONLY-G', 'RANDOM-B ONLY-B', 'RANDOM-RG', 'RANDOM-RB', 'RANDOM-GB', 'RANDOM-GR', 'RANDOM-R', 'RANDOM-G', 'RANDOM-B', 'RAINBOW']
 
-                    if (squareConfigs.transformationColor.special.includes("ANY-2") || squareConfigs.transformationColor["key"] === true) {
+                    if (squareConfigs.transformationColor.special.includes("ANY")) {
                         squareConfigs.transformationColor.special =
                             combinations[Math.floor(Math.random() * combinations.length)]
-                        squareConfigs.transformationColor["key"] = true; // used as an identifier to make sure its always changing  
-                    }
-                    else if (squareConfigs.transformationColor.special.includes("ANY-1")) {
-                        
-                        squareConfigs.transformationColor.special = 
-                            combinations[ Math.floor(Math.random() * combinations.length) ]
-                        // console.log(squareConfigs.transformationColor.special) 
                     }
                     for (let k = 1; k <= Math.max(...potentialNumbers); k++) {
                         for (let u = 0; u < x.sqr.length; u++) {
