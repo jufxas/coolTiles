@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool tile yeah</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js'></script>
+    <script src='https://code.jquery.com/jquery-3.5.1.min.js'></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+        #openConfigs {
+            background: rgb(0, 174, 255);
+        }
+        button:focus {outline:0;}
+        input {
+            width: 50px;
+        }
+        input#special {
+            width: 100px;
+        }
+        button#dimensions, button#colors, button#transformationColor {
+            background: rgb(255, 153, 0);
+        }
+
+        .infoButton {
+             background: rgb(0, 174, 255);
+             font-size: 15px;
+             color: white;
+             border: 1px solid black;
+
+            height: 20px;
+            width: 20px;
+
+            border-radius: 50%;
+            -moz-border-radius: 50%;
+            -webkit-border-radius: 50%;
+
+            margin-top: 4.25px;
+            margin-left: 4px;
+        }
+        .popup {
+            border: 1px solid black;
+            background: white;
+            width: 300px;
+            position: absolute; /* gets the overlay */ 
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+        .expand {
+            width: 500px;
+        }
+        #dimensionInfoHolder, #generalInformationHolder, #colorsInfoHolder, #transformationColorInfoHolder {
+            display: inline;
+        }
+        button#start {
+            background: lime;
+        }
+  
+    </style>
+</head>
+<body>
+    <script src="./main.js"></script>
+    <h1 id="rgbValue" style="font-size: 20px; display: inline-block;"></h1><br>
+    <div>Click on the squares and they change color. That's all.<br>All orange and yellow buttons are expandable/closable. Blue circles give clarification about certain settings. Values filled in are editable and represent the default values. There are also a handful of unknown limits to certain settings that I don't feel like fixing so be aware of that. You can also press Enter to remove line strokes.  </div><br>
+    <button id="openConfigs">Open Configurations</button><br><br>
+    <div id="configs"></div>
+    <button id="start">Restart</button><br><br>
+    <div id="p5Holder"></div>
+</body>
+</html> 

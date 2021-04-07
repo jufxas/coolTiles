@@ -1,0 +1,501 @@
+// changing rows and columns = breaks lol. 6x6 and beyond is broken
+// idk how to implement the user changing it, do it later? 
+//BUG TO FIX: SPACING BETWEEN SQUARES. MAKE SURE 0 WORKS. [DONE]
+// FIX ALL THE BUGS SO U CAN PLAY AROUND WITH IT LATER TRUST ME IT'LL BE WROTH IT 
+// MAKE SURE THAT THE TRANSFORMING SQUARES DONT WRAP AROUND THE EDGES, RIGHT EDGE 
+let smallSquares = [];
+let squareConfigs = {
+    dimensions: {x: 10, y: 10, w:10, h: 10}, // 25 25 10 10 
+    horizontalRows: 20, // dimension 
+    verticalColumns: 20,  // dimension 5 by 5 
+    numberOfSquares: 1, // for proj, d: 25,10,10,10. numsqr 196, spacing  10
+    spacingBetweenSquaresX: 10, // 10, 10
+    spacingBetweenSquaresY: 10,
+    colors: {r: 255, g: 255, b: 255},
+    transformationTime: 100, 
+    frameRate: 15,
+    showText: false, 
+    transformationColor: {r: 'random', g: 'random', b:'random', special: "ANY-2"} // special can be RANDOM_ALL, ONLY-R, ONLY-G, ONLY-B, RANDOM-R, RANDOM-G, RANDOM-B, RANDOM-RG, RANDOM-GB. CAN ALSO CHAIN LIKE ONLY-R RANDOM-R. IF U DO SOMETHING LIKE "ONLY-R RANDOM-G" UR JUST GONNA BREAK IT. 
+    // So heres the difference: For transformation color, r,g,b that is its constant transformation color. If you set it a transf color to 'random' then it will be a random color (0 to 255) but still have the same r value across all squares. if you have the special set to RANDOM-R, then the R value will constantly change across all squares. 
+    // RAINBOW - u get rainbow wow ! overrides all other commands 
+    // NOTE THAT SPECIAL SETTINGS OVERRIDE TRANSF COL OPTIONS. ONLY-() IS MOST POWERFUL. DOING RANDOM-RG AND ONLY-R WILL STILL JUST BE ONLY-R RANDOM-R
+    // ANY-1 - randomly chooses from special based off hard coded combinations and sticks with it 
+    // ANY-2 - constantly changing
+}
+
+// FOR RAINBOW GRAD 
+let color = {
+    r: 255,
+    g: 0,
+    b: 0,
+    reset() {
+        this.r = 255;
+        this.g = 0;
+        this.b = 0;
+    }
+}
+let rateOfIncrOrDecr = 1; // anything beyond 5 = broke 
+// FOR RAINBOW GRAD
+
+squareConfigs.constantValues = {
+    x: squareConfigs.dimensions.x,
+    y: squareConfigs.dimensions.y,
+    w: squareConfigs.dimensions.w,
+    h: squareConfigs.dimensions.h,
+
+    actuallyConstantX: squareConfigs.dimensions.x,
+    actuallyConstantY: squareConfigs.dimensions.y,
+    actuallyConstantW: squareConfigs.dimensions.w,
+    actuallyConstantH: squareConfigs.dimensions.h,
+}
+
+let wholeSquareHolder = [];
+class WholeSquare {
+    constructor (sqr) {
+        this.sqr = sqr; 
+    }
+}
+
+
+function setup () {
+    let mainCanvas = createCanvas (700, 700);
+    mainCanvas.parent("p5Holder")
+    frameRate (squareConfigs.frameRate);
+    
+    for (let n = 0; n < squareConfigs.numberOfSquares; n++) {
+        for (let i = 1; i <= (squareConfigs.horizontalRows * squareConfigs.verticalColumns) ; i++) {
+            
+
+            // if it hits edge of screen 
+            if (squareConfigs.dimensions.x >= width || i === 1 && squareConfigs.dimensions.x + (squareConfigs.dimensions.w * squareConfigs.horizontalRows) > width) {
+                // change >= to > for 1 edge case lOL 
+                squareConfigs.dimensions.x = squareConfigs.constantValues.actuallyConstantX;
+
+
+                // if spacingY 0, -10. if spacingY 10, -0. This seems to work, marked because may or may not cause bugs because  programming is fun 
+                // let gapBetweenLayers = squareConfigs.dimensions.h - squareConfigs.spacingBetweenSquaresY
+                // ^^ not sure this is needed anymore 
+
+
+                // squareConfigs.dimensions.y += squareConfigs.dimensions.h + (squareConfigs.dimensions.w * squareConfigs.horizontalRows) - gapBetweenLayers; // HERE  
+                // squareConfigs.dimensions.y += 60
+                squareConfigs.dimensions.y += squareConfigs.spacingBetweenSquaresY + (squareConfigs.dimensions.h * squareConfigs.verticalColumns) // This also seems to be working 
+
+                squareConfigs.constantValues.x = squareConfigs.dimensions.x;
+                squareConfigs.constantValues.y = squareConfigs.dimensions.y; 
+            }
+
+            // to make sure that theyre random and dont transform the original into one random color, making it that single color forever 
+            let templateColors = {r: squareConfigs.colors.r, g: squareConfigs.colors.g, b: squareConfigs.colors.b}
+            for (let col of Object.keys(squareConfigs.colors)) {
+                if (squareConfigs.colors[col] === "random") templateColors[col] = random(0, 255)
+            }
+
+            smallSquares.push([squareConfigs.dimensions.x, squareConfigs.dimensions.y, squareConfigs.dimensions.w, squareConfigs.dimensions.h, templateColors.r, templateColors.g, templateColors.b]) // last three, r = #, g = #, b = #. this can be implemented better idc rn tho im just playing around
+
+
+            if (i % squareConfigs.horizontalRows === 0  ) {
+                squareConfigs.dimensions.y += squareConfigs.dimensions.h  
+                squareConfigs.dimensions.x = (squareConfigs.constantValues.x) - squareConfigs.dimensions.w ;
+                
+
+           
+            }
+
+            // squareConfigs.dimensions.x += 10 changes += 10 to += square width 
+            squareConfigs.dimensions.x += squareConfigs.dimensions.w
+            // console.log(i, squareConfigs.dimensions.x, squareConfigs.dimensions.y)
+
+            
+            
+
+        }
+
+
+        // squareConfigs.dimensions.x += squareConfigs.spacingBetweenSquaresX + 2 * (squareConfigs.verticalColumns * squareConfigs.horizontalRows)
+        squareConfigs.dimensions.x += squareConfigs.spacingBetweenSquaresX + (squareConfigs.dimensions.w * squareConfigs.horizontalRows) // This seems to be working Less Goooo 
+
+
+        squareConfigs.constantValues.x = squareConfigs.dimensions.x
+
+        squareConfigs.dimensions.y = squareConfigs.constantValues.y;
+
+        
+        wholeSquareHolder.push(new WholeSquare(smallSquares))
+        smallSquares = [];
+
+    }
+}
+
+let circColor = [];
+
+function draw () {
+    background(255, 119, 0);
+
+    for (let i = 0; i < (squareConfigs.horizontalRows * squareConfigs.verticalColumns); i++) { // change i < 25 to i < (squareConfigs.horizontalRows * squareConfigs.verticalColumns). i have no idea why it was i < 25 lol
+        for (let x of wholeSquareHolder) {
+            fill(x.sqr[i][4] , x.sqr[i][5]  , x.sqr[i][6] )  // 4 = r, 5 = g, 6 = b 
+            // fill(x.sqr[i][4])
+            rect(x.sqr[i][0], x.sqr[i][1], x.sqr[i][2], x.sqr[i][3]) //x,y,w,h
+
+            // just for the circle that follows mouse 
+            if (
+                x.sqr[i][0]  <= mouseX && mouseX <= x.sqr[i][0] + squareConfigs.dimensions.w
+                && x.sqr[i][1] <= mouseY && mouseY <= x.sqr[i][1] + squareConfigs.dimensions.h
+            ) {
+                circColor = [x.sqr[i][4], x.sqr[i][5], x.sqr[i][6] ];
+            }
+        }
+    }
+
+
+    fill(circColor[0], circColor[1], circColor[2]);
+    $("h1#rgbValue").html(`R: ${circColor[0]} G: ${circColor[1]} B: ${circColor[2]}`)
+    ellipse(mouseX, mouseY, 10)
+    
+    
+
+}
+
+let strokeTog = false; 
+function keyPressed () {
+    // console.log(keyCode)
+    // 13 is enter 
+    if (keyCode === 13 && !strokeTog) {
+        noStroke ();
+        strokeTog = true; 
+    } else {
+        stroke (0);
+        strokeTog = false;  
+    }
+
+}
+// THIS WAS mouseClicked CHANGE IT BACK WHEN CODE GOOD LOL
+function mouseClicked() {
+    for (let i = 0; i < (squareConfigs.horizontalRows * squareConfigs.verticalColumns); i++) { 
+        for (let x of wholeSquareHolder) {
+
+            if (
+                x.sqr[i][0] <= mouseX && mouseX <= x.sqr[i][0] + squareConfigs.dimensions.w
+                && x.sqr[i][1] <= mouseY && mouseY <= x.sqr[i][1] + squareConfigs.dimensions.h
+            ) {
+               
+                // setting up the colors for the squares 
+                let templateTransformColors = { r: squareConfigs.transformationColor. r, g: squareConfigs.transformationColor.g, b: squareConfigs.transformationColor.b}
+                
+                for (let col of Object.keys(squareConfigs.transformationColor)) {
+                    if (squareConfigs.transformationColor[col] === "random") templateTransformColors[col] = random(0, 255)
+                }
+
+                
+                if (squareConfigs.transformationColor.special.includes("ONLY-")) {
+                    let importantColor = squareConfigs.transformationColor.special
+
+                    if (importantColor.includes(" ")) {
+                        importantColor = importantColor.split(" ")
+                        for (let a = 0; a < importantColor.length; a++) {
+                            if (importantColor[a].includes("ONLY-")) {
+                                importantColor = importantColor[a].split("ONLY-").join("").toLowerCase()
+                            }
+                        } 
+                    } else if (!importantColor.includes(" ")) {
+                        importantColor = importantColor.split("ONLY-").join("").toLowerCase()
+                    }
+
+                    let colorLetters = ["r","g","b"]
+                    for (let z = 0; z < colorLetters.length; z++) {
+                        if (!importantColor.includes(colorLetters[z])) {
+                            templateTransformColors[ colorLetters[z] ] = templateTransformColors[importantColor]
+                            
+                            // TESTING THIS
+                            squareConfigs.transformationColor[ colorLetters[z] ] = templateTransformColors[importantColor]
+
+                           
+                        }
+                    }
+                }
+                
+
+                const affectingColor = [templateTransformColors.r, templateTransformColors.g, templateTransformColors.b]
+                
+                // console.log(affectingColor)
+
+
+                // square[0-6] affects all square within a square 
+                // delay in a for loop stack overflow with the save                     
+
+                // let whichSquare = makeShuffledArrayOfNumbers(x.sqr.length)
+
+                let potentialNumbers = [];
+                let startingSquarePositionFrom0To = (i % squareConfigs.horizontalRows)
+
+            
+                for (let j = 0; j <= (squareConfigs.horizontalRows + squareConfigs.verticalColumns)  ; j++) { // FOR let j ... IDK IF ADDED VERT COLUMNS WILL FIX ISSUE WITH IT NOT REACHING EVERY SQUARE ... I REMOVED IT REAL QUICK BUT IK IT'S STILL BROKEN 
+                    for (let v = 0; v <= squareConfigs.verticalColumns + squareConfigs.horizontalRows  ; v++) { // SAME HERE CODE JUST SEEMS TO BE MAGICALLY WORKING WHEN I ADDED THIS SO IM KEEPING IT UNTIL I SEE A BUG 
+
+                        // console.log(newX, startingX, newX >= startingX)
+                        try {
+                            // down columns from initial hit box 
+                            fill(0)
+                            
+                            if ( startingSquarePositionFrom0To + v < squareConfigs.horizontalRows  ) {
+
+                                
+                                if (startingSquarePositionFrom0To + v < squareConfigs.horizontalRows) {
+
+                                if (squareConfigs.showText) {
+
+                                
+                                    text(
+                                        j + v + 1, 
+                                        x.sqr[i + (j * squareConfigs.horizontalRows) + v][0], 
+                                        x.sqr[i + (j * squareConfigs.horizontalRows) + v][1], 
+                                        11, 11
+                                    )
+                                        
+                                }
+                                x.sqr[i + (j * squareConfigs.horizontalRows) + v].push(j + v + 1)
+                                potentialNumbers.push(j + v + 1)
+                                }
+
+
+                                // HERE
+                                if (
+                                    startingSquarePositionFrom0To - v >= 0
+                                ) {
+                                    for (let b = 1; b < squareConfigs.horizontalRows - (squareConfigs.horizontalRows - startingSquarePositionFrom0To) + 1  ; b++) {
+           
+                                        if (squareConfigs.showText) {
+                                        
+                                                text(
+                                                    j + b + 1,
+                                                    x.sqr[i + (j * squareConfigs.horizontalRows)  - b][0],
+                                                    x.sqr[i + (j * squareConfigs.horizontalRows)  - b][1],
+                                                    10.01, 10.01
+                                                )
+                                                
+                                        }
+
+                                      
+                                        x.sqr[i + (j * squareConfigs.horizontalRows) - b].push(j + b + 1)
+                                        potentialNumbers.push(j + b + 1)
+                                      
+                                    }
+                                }
+                               
+                            }
+                        } catch { }
+
+
+
+                        try {
+                            // up columns from initial hit box 
+
+                            if (j !== 0 && startingSquarePositionFrom0To + v < squareConfigs.horizontalRows) {
+                                fill(0)
+                                // added if statement 
+                                if (startingSquarePositionFrom0To + v < squareConfigs.horizontalRows) {
+
+                                    if (squareConfigs.showText) {
+                                        
+                                            text(
+                                                j + v + 1, 
+                                                x.sqr[i - (j * squareConfigs.horizontalRows) + v][0], 
+                                                x.sqr[i - (j * squareConfigs.horizontalRows) + v][1],
+                                                11, 11
+                                            )
+                                           
+                                    }
+                                    
+                                   
+                                    x.sqr[i - (j * squareConfigs.horizontalRows) + v].push(j + v + 1)
+                                    potentialNumbers.push(j + v + 1)
+                                  
+                                }
+                               
+                                if (
+                                    startingSquarePositionFrom0To - v >= 0
+                                    
+                                ) {
+                                    for (let b = 1; b < squareConfigs.horizontalRows - (squareConfigs.horizontalRows - startingSquarePositionFrom0To) + 1; b++) {
+
+                                        if (squareConfigs.showText) {
+                                            
+                                                text(
+                                                    j + b + 1,
+                                                    x.sqr[i - (j * squareConfigs.horizontalRows) - b][0],
+                                                    x.sqr[i - (j * squareConfigs.horizontalRows) - b][1],
+                                                    10.01, 10.01
+                                                )
+                                               
+                                        }
+                                    
+                                        x.sqr[i - (j * squareConfigs.horizontalRows) - b].push(j + b + 1)
+                                        potentialNumbers.push(j + b + 1)
+                                        
+                                
+
+                                    }
+                                } 
+
+                            }
+                        } catch { }
+                    }
+                }
+
+
+                // bunch of numbers would get added on so i remove them 
+                for (let a = 0; a < x.sqr.length; a++) {
+                    x.sqr[a][7] = x.sqr[a][x.sqr[a].length - 1]
+                    x.sqr[a] = x.sqr[a].slice(0, 8)
+                }
+                
+
+
+                // console.log(x.sqr, potentialNumbers, Math.max(...potentialNumbers))
+
+                const timer = ms => new Promise(res => setTimeout(res, ms))
+                async function load() {
+                    let notHitSquares = [false, false, false] // R = 0, G = 1, B = 2
+                    let combinations = ["RANDOM_ALL", "ONLY-R", "ONLY-G", "ONLY-B", "RANDOM-R ONLY-R", 'RANDOM-G ONLY-G', 'RANDOM-B ONLY-B', 'RANDOM-RG', 'RANDOM-RB', 'RANDOM-GB', 'RANDOM-GR', 'RANDOM-R', 'RANDOM-G', 'RANDOM-B', 'RAINBOW']
+
+                    if (squareConfigs.transformationColor.special.includes("ANY-2") || squareConfigs.transformationColor["key"] === true) {
+                        squareConfigs.transformationColor.special =
+                            combinations[Math.floor(Math.random() * combinations.length)]
+                        squareConfigs.transformationColor["key"] = true; // used as an identifier to make sure its always changing  
+                    }
+                    else if (squareConfigs.transformationColor.special.includes("ANY-1")) {
+                        
+                        squareConfigs.transformationColor.special = 
+                            combinations[ Math.floor(Math.random() * combinations.length) ]
+                        console.log(squareConfigs.transformationColor.special) 
+                    }
+                    for (let k = 1; k <= Math.max(...potentialNumbers); k++) {
+                        for (let u = 0; u < x.sqr.length; u++) {
+                            // console.log(`X: ${x.sqr[u][7]} K: ${k}`)
+                            if (x.sqr[u][x.sqr[u].length - 1] === k) {
+
+                                if (squareConfigs.transformationColor.special.includes("RANDOM-")) {
+                                    let whichValueConstantlyChanging = squareConfigs.transformationColor.special
+
+                                    if (whichValueConstantlyChanging.includes(" ")) {
+                                        whichValueConstantlyChanging = whichValueConstantlyChanging.split(" ")
+                                        for (let b = 0; b < whichValueConstantlyChanging.length; b++) {
+                                            if (whichValueConstantlyChanging[b].includes('RANDOM-')) {
+                                                whichValueConstantlyChanging = whichValueConstantlyChanging[b].split("RANDOM-").join("")
+                                            }
+                                        }
+                                    } else if (!whichValueConstantlyChanging.includes(" ")) {
+                                        whichValueConstantlyChanging = whichValueConstantlyChanging.split("RANDOM-").join("")
+                                    }
+
+                                   
+                                    if (whichValueConstantlyChanging.includes("R")) {
+                                        x.sqr[u][4] = random(0, 255)
+                                        notHitSquares[0] = true; 
+                                    }
+                                    if (whichValueConstantlyChanging.includes("G")) {
+                                        x.sqr[u][5] = random(0, 255)
+                                        notHitSquares[1] = true;
+                                    }
+                                    if (whichValueConstantlyChanging.includes("B")) {
+                                        x.sqr[u][6] = random(0, 255)
+                                        notHitSquares[2] = true; 
+                                    }
+
+                                    // i dint wanna hard code each condition but it's licherally just 3 if statements iM FINE. 
+
+                                    if (squareConfigs.transformationColor.special.includes("ONLY-R")) {
+                                        x.sqr[u][5] = x.sqr[u][4]
+                                        x.sqr[u][6] = x.sqr[u][4]
+                                        notHitSquares[0] = true;
+                                        notHitSquares[1] = true; 
+                                        notHitSquares[2] = true;
+                                    } else if (squareConfigs.transformationColor.special.includes('ONLY-G')) {
+                                        x.sqr[u][4] = x.sqr[u][5]
+                                        x.sqr[u][6] = x.sqr[u][5]
+                                        notHitSquares[0] = true;
+                                        notHitSquares[1] = true;
+                                        notHitSquares[2] = true;
+                                    } else if (squareConfigs.transformationColor.special.includes("ONLY-B")) {
+                                        x.sqr[u][4] = x.sqr[u][6]
+                                        x.sqr[u][5] = x.sqr[u][6]
+                                        notHitSquares[0] = true;
+                                        notHitSquares[1] = true;
+                                        notHitSquares[2] = true;
+                                    }
+
+                                    if (notHitSquares.includes(false)) {
+                                        for (let C = 0; C < notHitSquares.length; C++) {
+                                            if (!notHitSquares[C]) {
+                                                x.sqr[u][4 + C] = affectingColor[C]
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                else if (squareConfigs.transformationColor.special.includes("RANDOM_ALL")) {
+                                    x.sqr[u][4] = random(0, 255)
+                                    x.sqr[u][5] = random(0, 255)
+                                    x.sqr[u][6] = random(0, 255)
+                                } else if (squareConfigs.transformationColor.special.includes("RAINBOW")) {
+                                    // COPY PASTED FROM ./rainbow gradient.html
+                                    for (let i in color) {
+                                        if (color[i] < 0) {
+                                            color[i] = 0;
+                                        }
+                                        else if (color[i] > 255) {
+                                            color[i] = 255;
+                                        }
+                                    }
+
+                                    if (color.r === 255 && color.g === 0 && color.b !== 0) {
+                                        color.b += -rateOfIncrOrDecr;
+                                    }
+
+                                    else if (color.r === 255 && color.g < 255) {
+                                        color.g += rateOfIncrOrDecr;
+                                    }
+
+                                    if (color.r <= 255 && color.g === 255) {
+                                        color.r += -rateOfIncrOrDecr;
+                                    }
+
+                                    if (color.r <= 0 && color.b < 255) {
+                                        color.r = 0;
+                                        color.b += rateOfIncrOrDecr;
+                                    }
+
+                                    if (color.r === 0 && color.g <= 255 && color.b === 255) {
+                                        color.g += -rateOfIncrOrDecr;
+                                    }
+                                    if (color.r < 255 && color.g === 0 && color.b === 255) {
+                                        color.g = 0;
+                                        color.r += rateOfIncrOrDecr;
+
+                                    }
+
+                                    x.sqr[u][4] = color.r 
+                                    x.sqr[u][5] = color.g 
+                                    x.sqr[u][6] = color.b 
+                                } else {
+                                    x.sqr[u][4] = affectingColor[0]
+                                    x.sqr[u][5] = affectingColor[1]
+                                    x.sqr[u][6] = affectingColor[2]
+                                }
+                                // await timer(squareConfigs.transformationTime)  HERE FOR INDIVUDAL SQUARES 
+
+                            }
+
+                            
+                        }
+                        await timer(squareConfigs.transformationTime ) // HERE FOR ENTIRE NUMBERS AT ONCE 
+                    }
+                }
+                load()
+ 
+            }
+        }
+    }
+}
+

@@ -1,0 +1,142 @@
+html 
+<button id="openConfigs">Open Configurations</button>
+    <div id="options">
+        
+    </div>
+
+javascript 
+// FOR WHATEVER REASON JQUERY ONLY WORKS IN setup() ???
+    $("div#options").toggle()
+
+    $("button#openConfigs").click(function() {
+        $("div#options").toggle()
+        $("div#options").empty()
+
+        let idOfConfigs = [];
+        for (let config of Object.keys(squareConfigs)) {
+            if (typeof squareConfigs[config] === "number") {
+                $("div#options").append(`
+                    <input type="text" id="${config}" placeholder="${config}" style="width: 200px" value="${squareConfigs[config]}">
+                `)
+                idOfConfigs.push(config)
+            }
+            else if (typeof squareConfigs[config] === "object" && config !== "constantValues") {
+                for (let each of Object.keys(squareConfigs[config])) {
+                    $("div#options").append(`
+                    <input type="text" id="${each}" placeholder="${each}" style="width: 200px" value="${squareConfigs.dimensions[each]}">
+                `)
+                idOfConfigs.push(each)
+                }
+            }
+        }
+
+        $("div#options").append(`<br><button id="submitConfigs">Submit</button>`)
+
+        $("button#submitConfigs").click(function() {
+
+            for (let conf of idOfConfigs) {
+                // console.log($(`input#${conf}`).val())
+                // console.log(conf)
+
+                if (squareConfigs[conf] === undefined) {
+                    console.log("hi", conf, squareConfigs.dimensions[conf], "USERVAL:",
+                    $(`input#${conf}`).val())
+
+                    // changing it!
+                    if (Number.isNaN(parseInt($(`input#${conf}`).val()))) {
+                        console.log("no")
+                        break;
+                    }
+
+                    squareConfigs.dimensions[conf] = parseInt($(`input#${conf}`).val())
+=
+                    test() // the function thingy 
+                } else {
+                    console.log("hi", conf, squareConfigs[conf], "USERVAL:",
+                        $(`input#${conf}`).val())
+
+
+                    if (Number.isNaN(parseInt($(`input#${conf}`).val()))) {
+                        console.log("no")
+                        break;
+                    }
+
+                    //changing it 
+                    squareConfigs[conf] = parseInt($(`input#${conf}`).val())
+                    smallSquares=[];
+                    wholeSquareHolder=[];
+  
+                    test() // the function thingy 
+
+                }
+            }
+        })
+    })
+
+
+
+    javascript expensive recursive affecting square method 
+    async function test(startingNumber, sqr, touchedIndex) {
+                        // GOD BRO I DONT KNOW 
+                        let n = startingNumber; 
+                        let x = sqr; // x = x.sqr
+                        let i = touchedIndex;
+
+                
+                        console.log(c)
+                        // change the one it's on now
+                        x.sqr[i][4] = affectingColor[0];
+                        x.sqr[i][5] = affectingColor[1];
+                        x.sqr[i][6] = affectingColor[2];
+
+                        //right square
+                        try{
+ 
+                            if ((i + 1) % squareConfigs.horizontalRows !== 0) {
+                                x.sqr[i + n][4] = affectingColor[0];
+                                x.sqr[i + n][5] = affectingColor[1];
+                                x.sqr[i + n][6] = affectingColor[2];
+                            }
+                        } catch{}                     
+
+                        // left square
+                        try{
+                        if (i % squareConfigs.horizontalRows !== 0) {
+                            // added if statement because dont want ... too hard to explain just need it lol
+                            x.sqr[i - n][4] = affectingColor[0];
+                            x.sqr[i - n][5] = affectingColor[1];
+                            x.sqr[i - n][6] = affectingColor[2];
+                        }  
+                        }catch{}
+
+                        // up square 
+                        try{
+                        x.sqr[i + (n * squareConfigs.horizontalRows) ][4] = affectingColor[0];
+                        x.sqr[i + (n * squareConfigs.horizontalRows) ][5] = affectingColor[1];
+                        x.sqr[i + (n * squareConfigs.horizontalRows) ][6] = affectingColor[2];
+                        }catch{}
+                    
+                        // down square 
+                        try{
+                        x.sqr[i - (n * squareConfigs.horizontalRows) ][4] = affectingColor[0];
+                        x.sqr[i - (n * squareConfigs.horizontalRows) ][5] = affectingColor[1];
+                        x.sqr[i - (n * squareConfigs.horizontalRows) ][6] = affectingColor[2];
+                        }catch{}
+
+
+                        await timer(squareConfigs.transformationTime);
+                        c++; 
+                        if (c >= 1000) return;
+                        
+                        test(1, x, i + 1)
+                        test(1, x, i - 1)
+                        test(1, x, i + squareConfigs.horizontalRows)
+                        test(1, x, i - squareConfigs.horizontalRows)
+
+                        
+                        
+                        
+
+                    }
+                    test(1, x, i)
+                }
