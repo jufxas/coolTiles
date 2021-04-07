@@ -369,7 +369,7 @@ function setup () {
                 }
             })
 
-            console.log(savedValues)
+            // console.log(savedValues)
 
 
             $('div#configs').empty()
@@ -502,13 +502,13 @@ function setup () {
                             // THIS IS HOW YOU DO MULTIPLE SELECTORS !!!!!! input[id="."][value="."][name=""]
 
                             if (userValue === "random") {
-                                console.log("RANDOM",thisID, userValue, configs)
+                                // console.log("RANDOM",thisID, userValue, configs)
                                 squareConfigs[configs][thisID] = "random"
                             } else if (thisID === "special") {
-                                console.log("SPECIAL", thisID, userValue, configs)
+                                // console.log("SPECIAL", thisID, userValue, configs)
                                 squareConfigs[configs][thisID] = userValue
                             } else {
-                                console.log("NUMBER",thisID, configs, userValue)
+                                // console.log("NUMBER",thisID, configs, userValue)
                                 squareConfigs[configs][thisID] = parseInt(userValue)
                             }
                         })
@@ -518,7 +518,7 @@ function setup () {
             }
         })
 
-        console.log(squareConfigs)
+        // console.log(squareConfigs)
 
         wholeSquareHolder = [];
         setConstants()
@@ -837,7 +837,7 @@ function mouseClicked() {
                         
                         squareConfigs.transformationColor.special = 
                             combinations[ Math.floor(Math.random() * combinations.length) ]
-                        console.log(squareConfigs.transformationColor.special) 
+                        // console.log(squareConfigs.transformationColor.special) 
                     }
                     for (let k = 1; k <= Math.max(...potentialNumbers); k++) {
                         for (let u = 0; u < x.sqr.length; u++) {
